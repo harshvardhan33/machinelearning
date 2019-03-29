@@ -1,0 +1,324 @@
+# Logistic Regression ( Classification)
+
+
+# Importing the libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Importing the dataset
+dataset = pd.read_csv('Social_Network_Ads.csv')
+features = dataset.iloc[:, [2, 3]].values
+labels = dataset.iloc[:, 4].values
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.model_selection import train_test_split
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size = 0.25, random_state = 0)
+
+# Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+features_train = sc.fit_transform(features_train)
+features_test = sc.transform(features_test)
+
+# Fitting Logistic Regression to the Training set
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression()
+classifier.fit(features_train, labels_train)
+
+# Predicting the Test set results
+labels_pred = classifier.predict(features_test)
+
+
+# Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(labels_test, labels_pred)
+
+# Visualising the Training set results
+from matplotlib.colors import ListedColormap
+features_set, labels_set = features_train, labels_train
+features1, features2 = np.meshgrid(np.arange(start = features_set[:, 0].min() - 1, stop = features_set[:, 0].max() + 1, step = 0.01),
+                     np.arange(start = features_set[:, 1].min() - 1, stop = features_set[:, 1].max() + 1, step = 0.01))
+plt.contourf(features1, features2, classifier.predict(np.array([features1.ravel(), features2.ravel()]).T).reshape(features1.shape),
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(features1.min(), features1.max())
+plt.ylim(features2.min(), features2.max())
+for i, j in enumerate(np.unique(labels_set)):
+    plt.scatter(features_set[labels_set == j, 0], features_set[labels_set == j, 1],
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('Logistic Regression (Training set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+# Visualising the Test set results
+from matplotlib.colors import ListedColormap
+features_set, labels_set = features_test, labels_test
+features1, features2 = np.meshgrid(np.arange(start = features_set[:, 0].min() - 1, stop = features_set[:, 0].max() + 1, step = 0.01),
+                     np.arange(start = features_set[:, 1].min() - 1, stop = features_set[:, 1].max() + 1, step = 0.01))
+plt.contourf(features1, features2, classifier.predict(np.array([features1.ravel(), features2.ravel()]).T).reshape(features1.shape),
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(features1.min(), features1.max())
+plt.ylim(features2.min(), features2.max())
+for i, j in enumerate(np.unique(labels_set)):
+    plt.scatter(features_set[labels_set == j, 0], features_set[labels_set == j, 1],
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('Logistic Regression (Test set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+
+
+
+"BETTER APPROACH FOR PERFORMING LOGISTIC REGRESIION"
+
+x_min, x_max = features_train[:, 0].min() - 1, features_train[:, 0].max() + 1
+y_min, y_max = features_train[:, 1].min() - 1, features_train[:, 1].max() + 1
+
+xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.1),
+                     np.arange(y_min, y_max, 0.1))
+# Obtain labels for each point in mesh using the model.
+Z = classifier.predict(np.c_[xx.ravel(), yy.ravel()])
+Z = Z.reshape(xx.shape)
+
+# Plot the points
+plt.plot(features_test[labels_test == 1, 0], features_test[labels_test == 1, 1], 'bo', label='Class 2')
+plt.plot(features_test[labels_test == 0, 0], features_test[labels_test == 0, 1], 'ro', label='Class 1')
+
+plt.contourf(xx, yy, Z, alpha=1.0)
+plt.show()
+
+
+CODE CHALLENGES
+
+
+Q1. (Create a program that fulfills the following specification.)
+affairs.csv
+
+
+Import the affairs.csv file.
+
+It was derived from a survey of women in 1974 by Redbook magazine, in which married women were asked about their participation in extramarital affairs.
+
+Description of Variables
+
+The dataset contains 6366 observations of 10 variables:(modified and cleaned)
+
+rate_marriage: woman's rating of her marriage (1 = very poor, 5 = very good)
+
+age: women's age
+
+yrs_married: number of years married
+
+children: number of children
+
+religious: women's rating of how religious she is (1 = not religious, 4 = strongly religious)
+
+educ: level of education (9 = grade school, 12 = high school, 14 = some college, 16 = college graduate, 17 = some graduate school, 20 = advanced degree)
+
+occupation: women's occupation (1 = student, 2 = farming/semi-skilled/unskilled, 3 = "white collar", 4 = teacher/nurse/writer/technician/skilled, 5 = managerial/business, 6 = professional with advanced degree)
+
+occupation_husb: husband's occupation (same coding as above)
+
+affair: outcome 0/1, where 1 means a woman had at least 1 affair.
+
+    Now, perform Classification using logistic regression and check your model accuracy using confusion matrix and also through .score() function.
+
+NOTE: Perform OneHotEncoding for occupation and occupation_husb, since they should be treated as categorical variables. Careful from dummy variable trap for both!!
+
+    What percentage of total women actually had an affair?
+
+(note that Increases in marriage rating and religiousness correspond to a decrease in the likelihood of having an affair.)
+
+    Predict the probability of an affair for a random woman not present in the dataset. She's a 25-year-old teacher who graduated college, has been married for 3 years, has 1 child, rates herself as strongly religious, rates her marriage as fair, and her husband is a farmer.
+
+Optional
+
+    Build an optimum model, observe all the coefficients.
+
+
+
+
+# K-Nearest Neighbors (K-NN)
+
+# Importing the libraries
+import numpy as np
+import matplotlib.pyplot as plt
+import pandas as pd
+
+# Importing the dataset
+dataset = pd.read_csv('Social_Network_Ads.csv')
+features = dataset.iloc[:, [2, 3]].values
+labels = dataset.iloc[:, 4].values
+
+# Splitting the dataset into the Training set and Test set
+from sklearn.cross_validation import train_test_split
+features_train, features_test, labels_train, labels_test = train_test_split(features, labels, test_size = 0.25, random_state = 0)
+
+# Feature Scaling
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+features_train = sc.fit_transform(features_train)
+features_test = sc.transform(features_test)
+
+# Fitting K-NN to the Training set
+from sklearn.neighbors import KNeighborsClassifier
+classifier = KNeighborsClassifier(n_neighbors = 5, p = 2) #When p = 1, this is equivalent to using manhattan_distance (l1), and euclidean_distance (l2) for p = 2
+classifier.fit(features_train, labels_train)
+
+# Predicting the Test set results
+labels_pred = classifier.predict(features_test)
+
+# Making the Confusion Matrix
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(labels_test, labels_pred)
+
+# Visualising the Training set results
+from matplotlib.colors import ListedColormap
+features_set, labels_set = features_train, labels_train
+features1, features2 = np.meshgrid(np.arange(start = features_set[:, 0].min() - 1, stop = features_set[:, 0].max() + 1, step = 0.01),
+                     np.arange(start = features_set[:, 1].min() - 1, stop = features_set[:, 1].max() + 1, step = 0.01))
+plt.contourf(features1, features2, classifier.predict(np.array([features1.ravel(), features2.ravel()]).T).reshape(features1.shape),
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(features1.min(), features1.max())
+plt.ylim(features2.min(), features2.max())
+for i, j in enumerate(np.unique(labels_set)):
+    plt.scatter(features_set[labels_set == j, 0], features_set[labels_set == j, 1],
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('K-NN (Training set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+# Visualising the Test set results
+# Visualising the Training set results
+from matplotlib.colors import ListedColormap
+features_set, labels_set = features_test, labels_test
+features1, features2 = np.meshgrid(np.arange(start = features_set[:, 0].min() - 1, stop = features_set[:, 0].max() + 1, step = 0.01),
+                     np.arange(start = features_set[:, 1].min() - 1, stop = features_set[:, 1].max() + 1, step = 0.01))
+plt.contourf(features1, features2, classifier.predict(np.array([features1.ravel(), features2.ravel()]).T).reshape(features1.shape),
+             alpha = 0.75, cmap = ListedColormap(('red', 'green')))
+plt.xlim(features1.min(), features1.max())
+plt.ylim(features2.min(), features2.max())
+for i, j in enumerate(np.unique(labels_set)):
+    plt.scatter(features_set[labels_set == j, 0], features_set[labels_set == j, 1],
+                c = ListedColormap(('red', 'green'))(i), label = j)
+plt.title('K-NN (Test set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+
+CODE CHALLENGE
+
+Q1. (Create a program that fulfills the following specification.)
+mushrooms.csv
+
+Import mushrooms.csv file
+
+This dataset includes descriptions of hypothetical samples corresponding to 23 species of gilled mushrooms in the Agaricus and Lepiota Family Mushroom drawn from The Audubon Society Field Guide to North American Mushrooms (1981). Each species is identified as definitely edible, definitely poisonous, or of unknown edibility and not recommended. This latter class was combined with the poisonous one.
+
+ 
+
+Attribute Information:
+
+classes: edible=e, poisonous=p (outcome)
+
+cap-shape: bell=b,conical=c,convex=x,flat=f, knobbed=k,sunken=s
+
+cap-surface: fibrous=f,grooves=g,scaly=y,smooth=s
+
+cap-color: brown=n, buff=b,cinnamon=c,gray=g,green=r,pink=p,purple=u,red=e,white=w,yellow=y
+
+ 
+
+bruises: bruises=t, no=f
+
+ 
+
+odor: almond=a,anise=l,creosote=c,fishy=y,foul=f,musty=m,none=n,pungent=p,spicy=s
+
+ 
+
+gill-attachment: attached=a,descending=d,free=f,notched=n
+
+ 
+
+gill-spacing: close=c,crowded=w,distant=d
+
+ 
+
+gill-size: broad=b,narrow=n
+
+ 
+
+gill-color: black=k,brown=n,buff=b,chocolate=h,gray=g,
+
+green=r,orange=o,pink=p,purple=u,red=e,white=w,yellow=y
+
+ 
+
+stalk-shape: enlarging=e,tapering=t
+
+ 
+
+stalk-root: bulbous=b,club=c,cup=u,equal=e,rhizomorphs=z,rooted=r,missing=?
+
+ 
+
+stalk-surface-above-ring: fibrous=f,scaly=y,silky=k,smooth=s
+
+ 
+
+stalk-surface-below-ring: fibrous=f,scaly=y,silky=k,smooth=s
+
+ 
+
+stalk-color-above-ring: brown=n,buff=b,cinnamon=c,gray=g,orange=o,pink=p,red=e,white=w,yellow=y
+
+ 
+
+stalk-color-below-ring: brown=n,buff=b,cinnamon=c,gray=g,orange=o,pink=p,red=e,white=w,yellow=y
+
+ 
+
+veil-type: partial=p,universal=u
+
+ 
+
+veil-color: brown=n,orange=o,white=w,yellow=y
+
+ring-number: none=n,one=o,two=t
+
+ 
+
+ring-type: cobwebby=c,evanescent=e,flaring=f,large=l,none=n,pendant=p,sheathing=s,zone=z
+
+ 
+
+spore-print-color: black=k,brown=n,buff=b,chocolate=h,green=r,orange=o,purple=u,white=w,yellow=y
+
+ 
+
+population: abundant=a,clustered=c,numerous=n,scattered=s,several=v,solitary=y
+
+ 
+
+habitat: grasses=g,leaves=l,meadows=m,paths=p,urban=u,waste=w,woods=d
+
+    Perform Classification on the given dataset to predict if the mushroom is edible or poisonous w.r.t. it’s different attributes.
+
+(you can perform on habitat, population and odor as the predictors)
+
+    Check accuracy of the model.
+
+
+
+
+
+
